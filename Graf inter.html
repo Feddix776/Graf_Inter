@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Energia Globale: Fonti a Confronto (2000–2025)</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background: #f4f6f9;
+            color: #333;
+            text-align: center;
+            margin: 40px;
+        }
+        h2 {
+            color: #222;
+        }
+    </style>
+</head>
+<body>
+    <h2>Produzione Globale di Energia (TWh)<br>Fossili, Rinnovabili e Nucleare (2000–2025)</h2>
+    <div id="grafico" style="width: 90%; max-width: 1000px; height: 600px; margin: auto;"></div>
+    <script>
+        const anni = Array.from({length: 26}, (_, i) => 2000 + i);
+        const fossili = [90000,90800,91600,92400,93200,92000,92300,92600,92900,93200,93000,91000,89000,87000,85000,88000,86000,84000,82000,80000,83000,81000,79000,77000,75000,78000];
+        const rinnovabili = [8000,9000,10000,11000,12000,11000,14000,17000,20000,23000,27000,31000,35000,39000,43000,27000,34000,41000,48000,55000,42000,48000,54000,60000,66000,60000];
+        const nucleare = [26000,26500,27000,27500,28000,27000,27500,28000,28500,29000,28000,28500,29000,29500,30000,29000,29500,30000,30500,31000,30000,30500,31000,31500,32000,31000];
+
+        const frames = anni.map((anno, i) => ({
+            name: anno.toString(),
+            data: [
+                {x: anni.slice(0, i+1), y: fossili.slice(0, i+1)},
+                {x: anni.slice(0, i+1), y: rinnovabili.slice(0, i+1)},
+                {x: anni.slice(0, i+1), y: nucleare.slice(0, i+1)}
+            ]
+        }));
+
+        const traceFossili = {
+            x: [anni[0]], y: [fossili[0]],
+            mode: "lines+markers", name: "Fossili",
+            line: {color: "crimson", width: 3}, marker: {size: 6}
+        };
+        const traceRinnovabili = {
+            x: [anni[0]], y: [rinnovabili[0]],
+            mode: "lines+markers", name: "Rinnovabili",
+            line: {color: "green", width: 3}, marker: {size: 6}
+        };
+        const traceNucleare = {
+            x: [anni[0]], y: [nucleare[0]],
+            mode: "lines+markers", name: "Nucleare",
+            line: {color: "royalblue", width: 3}, marker: {size: 6}
+        };
+
+        const layout = {
+            xaxis: {title: "Anno", range: [2000, 2025], tickformat: "d"},
+            yaxis: {title: "Produzione (TWh)", range: [0, 100000]},
+            updatemenus: [{
+                type: "buttons", showactive: false, x: 1.15, y: 1.15,
+                buttons: [{
+                    label: "▶️ Play", method: "animate",
+                    args: [null, {fromcurrent: true, frame: {duration: 300, redraw: true}, transition: {duration: 150}}]
+                }]
+            }],
+            sliders: [{
+                active: 0,
+                x: 0.1, len: 0.8,
+                pad: {b: 10},
+                currentvalue: {
+                    visible: true,
+                    prefix: "Anno: ",
+                    xanchor: "right",
+                    font: {size: 16, color: "#111"}
+                },
+                steps: anni.map((anno, i) => ({
+                    label: anno.toString(),
+                    method: "animate",
+                    args: [[anno.toString()], {
+                        mode: "immediate",
+                        frame: {duration: 0, redraw: true},
+                        transition: {duration: 0}
+                    }]
+                }))
+            }],
+            margin: {t: 60, b: 80},
+            plot_bgcolor: "#ffffff",
+            paper_bgcolor: "#f4f6f9",
+            font: {family: "Segoe UI", size: 14, color: "#333"},
+            legend: {orientation: "h", y: -0.3}
+        };
+
+        Plotly.newPlot("grafico", [traceFossili, traceRinnovabili, traceNucleare], layout).then(() => {
+            Plotly.addFrames("grafico", frames);
+        });
+    </script>
+</body>
+</html>
